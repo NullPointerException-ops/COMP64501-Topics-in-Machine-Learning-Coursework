@@ -1,0 +1,5 @@
+#### IMPORTANT: REPLACE WITH YOUR STUDENT USERNAME ####
+# e.g. STUDENT_ID = '10045678'
+STUDENT_ID = 'your_student_id_here'
+
+########## DO NOT OTHERWISE MODIFY THIS FILE ##########
