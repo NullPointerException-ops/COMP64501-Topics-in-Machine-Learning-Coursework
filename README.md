@@ -27,7 +27,7 @@ This coursework assignment requires you to implement, train, and evaluate a mach
 ### Defining and training your model
 You will have to define a model architecture and a training procedure for this assignment, then train and evaluate it on the Fashion-MNIST dataset.
 1. Implement your model in `submission/fashion_model.py`. 
-2. Implement the training and evaluation functions in `submission/train_fashion_model.py`.
+2. Edit the training and evaluation functions in `submission/fashion_training.py`, as needed.
 3. Perform cross-evaluation for hyperparameter selection and final model evaluation.
 
 You can train your model by running the following command from the project root directory:
@@ -146,7 +146,6 @@ The report should describe your model development process, justify your design d
     - Clear presentation of training and validation results, including relevant plots (e.g. training/validation accuracy and loss curves).
     - Discussion of model performance, challenges faced, and potential improvements. 
     - All plots and tables should be clearly labeled and referenced in the text. All plots should have appropriate axis labels, legends, and titles.
-
 Word count for report: max. 1000 words, excluding figures, tables, captions, and citations. **Please include a word count in your submission.** Figures and tables are strongly encouraged. Please cite all relevant sources and references. If you use any external code or libraries beyond those provided, please cite them appropriately.
 
 [^*]: I know I'll get a lot of questions about this. As this is the first year we're doing this particular assignment, I reserve the right to ease these criteria as we receive more submissions. I will do my best to ensure that the bonus marks are allocated fairly and there's a justifiable cutoff point based on the distribution of submissions we receive, not an arbitrary threshold that can be attained or missed through e.g. stochasticity in the test set. 
