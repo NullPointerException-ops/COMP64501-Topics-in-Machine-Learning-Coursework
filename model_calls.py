@@ -14,6 +14,7 @@ import torch.nn as nn
 import torchvision
 
 import utils
+from submission.fashion_training import get_transforms
 from submission.fashion_model import Net
 from submission.STUDENT_ID import STUDENT_ID
 
@@ -49,6 +50,9 @@ def main():
     if not os.path.exists('submission/model_weights.pth'):
         print("I couldn't find the model weights at submission/model_weights.pth! Did you forget to train your model first?")
         return
+    if os.path.getsize('submission/model_weights.pth') == 0:
+        print("The model weights file at submission/model_weights.pth is empty! Check that your model was trained and saved correctly.")
+        return
     
     # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -79,8 +83,17 @@ def main():
         print(f"PARAMETERS: {num_params}")
         return
     
+    # Define training transforms and check validity
+    transforms_train = get_transforms(mode='train')
+    passed, error = utils.check_valid_transforms(transforms_train)
+    if not passed:
+        print(f"STUDENT_ID: {STUDENT_ID}")
+        print(f"ERROR: {error}")
+        print(f"PARAMETERS: {num_params}")
+        return
+    
     # Model architecture check
-    passed, error = utils.model_check(model, device)
+    passed, error = utils.model_check(model, device, transforms=transforms_train)
     if not passed:
         print(f"STUDENT_ID: {STUDENT_ID}")
         print(f"ERROR: {error}")
@@ -88,7 +101,7 @@ def main():
         return
     
     # Training function check
-    passed, error = utils.training_check(Net, device)
+    passed, error = utils.training_check(Net, device, transforms=transforms_train)
     if not passed:
         print(f"STUDENT_ID: {STUDENT_ID}")
         print(f"ERROR: {error}")
@@ -98,12 +111,29 @@ def main():
     # Reload weights after sanity check (in case model state changed)
     model.load_state_dict(torch.load('submission/model_weights.pth', map_location=device))
     model.to(device)
-    
+
+    # Define evaluation transforms and check validity and determinism
+    transform = get_transforms(mode='eval')
+    for tf in transform.transforms:
+        if hasattr(tf, 'train'):
+            tf.eval()  # set to eval mode if applicable # type: ignore
+    passed, error = utils.check_valid_transforms(transform)
+    if not passed:
+        print(f"STUDENT_ID: {STUDENT_ID}")
+        print(f"ERROR in eval transforms: {error}")
+        print(f"PARAMETERS: {num_params}")
+        return
+    passed, error = utils.test_transform_determinism(transform)
+    if not passed:
+        print(f"STUDENT_ID: {STUDENT_ID}")
+        print(f"ERROR in eval transforms: {error}")
+        print(f"PARAMETERS: {num_params}")
+        return
+
     # Load Fashion-MNIST test set
     # NOTE: during marking, dataset and dataloader may change! 
     # The results you get here may not be the same as during marking!
     # However the format will be the same - if this works, so will the marking setup.
-    transform = torchvision.transforms.ToTensor()
     test_dataset = torchvision.datasets.FashionMNIST(
         root='./data',
         train=False,
